@@ -1,5 +1,6 @@
 package com.pueblahealth.back.controller;
 
+import com.pueblahealth.back.dto.LoginRequest;
 import com.pueblahealth.back.dto.RegisterRequest;
 import com.pueblahealth.back.dto.UserResponse;
 import com.pueblahealth.back.model.User;
@@ -21,4 +22,9 @@ public class AuthController {
     public UserResponse register(@RequestBody RegisterRequest request) {
         return authService.register(request.getEmail(), request.getPassword());
     }
+    @PostMapping("/login")
+    public UserResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request.getEmail(), request.getPassword());
+    }
+
 }
