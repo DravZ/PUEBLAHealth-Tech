@@ -1,0 +1,67 @@
+2026-02-25T09:26:52.485-06:00  INFO 21816 --- [back] [main] com.pueblahealth.back.BackApplication    : Starting BackApplication using Java 24.0.1 with PID 21816 (C:\Users\vidit\Documents\utvco\ING\C8\SDA\PUEBLAHealth Tech\back\target\classes started by vidit in C:\Users\vidit\Documents\utvco\ING\C8\SDA\PUEBLAHealth Tech\back)
+2026-02-25T09:26:52.489-06:00 DEBUG 21816 --- [back] [main] com.pueblahealth.back.BackApplication    : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-02-25T09:26:52.490-06:00  INFO 21816 --- [back] [main] com.pueblahealth.back.BackApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-02-25T09:26:53.554-06:00  INFO 21816 --- [back] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-25T09:26:53.662-06:00  INFO 21816 --- [back] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 90 ms. Found 1 JPA repository interface.
+2026-02-25T09:26:54.614-06:00  INFO 21816 --- [back] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-02-25T09:26:54.635-06:00  INFO 21816 --- [back] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-25T09:26:54.635-06:00  INFO 21816 --- [back] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-25T09:26:54.723-06:00  INFO 21816 --- [back] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2174 ms
+2026-02-25T09:26:55.061-06:00  INFO 21816 --- [back] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-25T09:26:55.169-06:00  INFO 21816 --- [back] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-02-25T09:26:55.906-06:00  INFO 21816 --- [back] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-25T09:26:55.972-06:00  INFO 21816 --- [back] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-25T09:26:56.595-06:00  INFO 21816 --- [back] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@322ab6ce
+2026-02-25T09:26:56.599-06:00  INFO 21816 --- [back] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-25T09:26:56.745-06:00  INFO 21816 --- [back] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/pueblahealth]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.4
+	Default catalog/schema: pueblahealth/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-25T09:26:57.930-06:00  INFO 21816 --- [back] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-25T09:26:58.043-06:00  INFO 21816 --- [back] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-25T09:26:58.165-06:00  INFO 21816 --- [back] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-25T09:26:58.443-06:00  WARN 21816 --- [back] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-25T09:26:58.569-06:00  WARN 21816 --- [back] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 24a50fd6-3203-470c-a4b3-b1187551c1e0
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-02-25T09:26:58.591-06:00  INFO 21816 --- [back] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-02-25T09:26:59.244-06:00  INFO 21816 --- [back] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-02-25T09:26:59.252-06:00  INFO 21816 --- [back] [main] com.pueblahealth.back.BackApplication    : Started BackApplication in 7.402 seconds (process running for 7.975)
+2026-02-25T09:27:33.350-06:00  INFO 21816 --- [back] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-25T09:27:33.351-06:00  INFO 21816 --- [back] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-02-25T09:27:33.353-06:00  INFO 21816 --- [back] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-02-25T09:27:33.577-06:00  INFO 21816 --- [back] [http-nio-8080-exec-1] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor4@pueblahealth.com
+2026-02-25T09:27:34.250-06:00 ERROR 21816 --- [back] [http-nio-8080-exec-1] c.pueblahealth.back.service.AuthService  : Cuenta bloqueada intentó iniciar sesión: doctor4@pueblahealth.com
+2026-02-25T09:29:24.313-06:00  INFO 21816 --- [back] [http-nio-8080-exec-5] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:24.405-06:00  WARN 21816 --- [back] [http-nio-8080-exec-5] c.pueblahealth.back.service.AuthService  : Intento fallido #1 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:41.728-06:00  INFO 21816 --- [back] [http-nio-8080-exec-6] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:41.809-06:00  INFO 21816 --- [back] [http-nio-8080-exec-6] c.pueblahealth.back.service.AuthService  : Login exitoso del usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:55.206-06:00  INFO 21816 --- [back] [http-nio-8080-exec-7] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:55.280-06:00  WARN 21816 --- [back] [http-nio-8080-exec-7] c.pueblahealth.back.service.AuthService  : Intento fallido #1 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:56.365-06:00  INFO 21816 --- [back] [http-nio-8080-exec-8] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:56.436-06:00  WARN 21816 --- [back] [http-nio-8080-exec-8] c.pueblahealth.back.service.AuthService  : Intento fallido #2 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:57.353-06:00  INFO 21816 --- [back] [http-nio-8080-exec-9] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:57.425-06:00  WARN 21816 --- [back] [http-nio-8080-exec-9] c.pueblahealth.back.service.AuthService  : Intento fallido #3 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:58.266-06:00  INFO 21816 --- [back] [http-nio-8080-exec-10] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:58.335-06:00  WARN 21816 --- [back] [http-nio-8080-exec-10] c.pueblahealth.back.service.AuthService  : Intento fallido #4 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:59.377-06:00  INFO 21816 --- [back] [http-nio-8080-exec-2] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:29:59.449-06:00  WARN 21816 --- [back] [http-nio-8080-exec-2] c.pueblahealth.back.service.AuthService  : Intento fallido #5 para el usuario doctor3@pueblahealth.com
+2026-02-25T09:29:59.450-06:00 ERROR 21816 --- [back] [http-nio-8080-exec-2] c.pueblahealth.back.service.AuthService  : Cuenta bloqueada por múltiples intentos fallidos: doctor3@pueblahealth.com
+2026-02-25T09:30:00.729-06:00  INFO 21816 --- [back] [http-nio-8080-exec-1] c.pueblahealth.back.service.AuthService  : Intento de login para el usuario: doctor3@pueblahealth.com
+2026-02-25T09:30:00.733-06:00 ERROR 21816 --- [back] [http-nio-8080-exec-1] c.pueblahealth.back.service.AuthService  : Cuenta bloqueada intentó iniciar sesión: doctor3@pueblahealth.com
+2026-02-25T09:31:05.597-06:00  INFO 21816 --- [back] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-25T09:31:05.610-06:00  INFO 21816 --- [back] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-02-25T09:31:05.621-06:00  INFO 21816 --- [back] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-25T09:31:05.630-06:00  INFO 21816 --- [back] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-02-25T09:31:05.645-06:00  INFO 21816 --- [back] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

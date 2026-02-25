@@ -1,17 +1,23 @@
 package com.pueblahealth.back.service;
 
 import com.pueblahealth.back.dto.UserResponse;
+import com.pueblahealth.back.exception.AccountLockedException;
+import com.pueblahealth.back.exception.InvalidCredentialsException;
+import com.pueblahealth.back.exception.UserAlreadyExistsException;
 import com.pueblahealth.back.model.User;
 import com.pueblahealth.back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder) {
@@ -21,8 +27,11 @@ public class AuthService {
 
     public UserResponse register(String email, String password) {
 
+        logger.info("Intento de registro con email: {}", email);
+
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("El usuario ya existe");
+            logger.warn("Intento de registro con email ya existente: {}", email);
+            throw new UserAlreadyExistsException("El usuario ya está registrado");
         }
 
         String hashedPassword = passwordEncoder.encode(password);
@@ -35,6 +44,7 @@ public class AuthService {
         user.setAccountLocked(false);
 
         User savedUser = userRepository.save(user);
+        logger.info("Usuario registrado correctamente: {}", email);
 
         return new UserResponse(
                 savedUser.getId(),
@@ -44,29 +54,40 @@ public class AuthService {
     }
 
     public UserResponse login(String email, String password) {
+        logger.info("Intento de login para el usuario: {}", email);
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> {
+                    logger.warn("Intento de login con usuario inexistente: {}", email);
+                    return new InvalidCredentialsException("Credenciales inválidas");
+                });
 
         if (user.isAccountLocked()) {
-            throw new RuntimeException("Cuenta bloqueada");
+            logger.error("Cuenta bloqueada intentó iniciar sesión: {}", email);
+            throw new AccountLockedException("La cuenta está bloqueada por múltiples intentos fallidos");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
 
             user.setFailedAttempts(user.getFailedAttempts() + 1);
+            logger.warn("Intento fallido #{} para el usuario {}",
+                    user.getFailedAttempts(), email);
 
             if (user.getFailedAttempts() >= 5) {
                 user.setAccountLocked(true);
-                user.setLockTime(System.currentTimeMillis());
+                logger.error("Cuenta bloqueada por múltiples intentos fallidos: {}", email);
             }
 
             userRepository.save(user);
-            throw new RuntimeException("Credenciales incorrectas");
+
+            throw new InvalidCredentialsException("Credenciales inválidas");
         }
 
         user.setFailedAttempts(0);
         userRepository.save(user);
+
+        logger.info("Login exitoso del usuario: {}", email);
+
 
         return new UserResponse(
                 user.getId(),
