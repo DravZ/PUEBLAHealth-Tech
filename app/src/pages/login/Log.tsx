@@ -1,15 +1,13 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
-const Registro = () => {
+const Login = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    role: "MEDICO",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -20,7 +18,7 @@ const Registro = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/auth/register", {
+      const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,24 +30,29 @@ const Registro = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Error al registrar usuario");
+        throw new Error("Credenciales incorrectas");
       }
 
       const data = await response.json();
 
-      console.log("Usuario registrado:", data);
-      alert("Registro exitoso");
+      console.log("Login exitoso:", data);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      alert("Bienvenido 🎉");
     } catch (error) {
       console.error("Error:", error);
-      alert("Error en el registro");
+      alert("Error al iniciar sesión");
     }
   };
 
   return (
     <div className="container">
       <div className="card">
-        <h1>Crear Cuenta</h1>
-        <p className="subtitle">Registro de personal médico</p>
+        <h1>Iniciar Sesión</h1>
+        <p className="subtitle">Acceso para personal médico</p>
 
         <form onSubmit={handleSubmit}>
           <div className="inputGroup">
@@ -75,15 +78,20 @@ const Registro = () => {
               required
             />
           </div>
-
-          <div className="inputGroup">
-            <label>Rol</label>
-            <select name="role" value={form.role} onChange={handleChange}>
-              <option value="MEDICO">Médico</option>
-            </select>
+          <div style={{ textAlign: "center", marginTop: "10px" }}>
+            <Link
+              to="/register"
+              style={{
+                color: "#1f4037",
+                fontSize: "14px",
+                textDecoration: "none",
+                fontWeight: "500",
+              }}
+            >
+              ¿No tienes cuenta? Regístrate
+            </Link>
           </div>
-
-          <button type="submit">Registrarse</button>
+          <button type="submit">Ingresar</button>
         </form>
       </div>
 
@@ -130,7 +138,7 @@ const Registro = () => {
           color: #444;
         }
 
-        input, select {
+        input {
           padding: 12px;
           border-radius: 10px;
           border: 1px solid #ddd;
@@ -138,7 +146,7 @@ const Registro = () => {
           transition: all 0.2s ease;
         }
 
-        input:focus, select:focus {
+        input:focus {
           outline: none;
           border-color: #1f4037;
           box-shadow: 0 0 0 3px rgba(31,64,55,0.15);
@@ -172,4 +180,4 @@ const Registro = () => {
   );
 };
 
-export default Registro;
+export default Login;
