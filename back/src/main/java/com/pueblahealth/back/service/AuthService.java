@@ -31,10 +31,10 @@ public class AuthService {
     }
     public UserResponse register(String email, String password, HttpServletRequest request) {
 
-        logger.info("Intento de registro con email: {}", email);
+        logger.info("[INFO]Intento de registro con email: {}", email);
 
         if (userRepository.findByEmail(email).isPresent()) {
-            logger.warn("Intento de registro con email ya existente: {}", email);
+            logger.warn("[WARN]Intento de registro con email ya existente: {}", email);
             throw new UserAlreadyExistsException("El usuario ya está registrado");
         }
 
@@ -48,11 +48,11 @@ public class AuthService {
         user.setAccountLocked(false);
 
         User savedUser = userRepository.save(user);
-        logger.info("Usuario registrado correctamente: {}", email);
+        logger.info("[SUCCESS]Usuario registrado correctamente: {}", email);
 
         securityLogService.log(
                 email,
-                "USER_REGISTER",
+                "CRITICAL",
                 request.getRemoteAddr(),
                 "Cuenta bloqueada por múltiples intentos fallidos"
         );
@@ -65,41 +65,41 @@ public class AuthService {
     }
 
     public UserResponse login(String email, String password, HttpServletRequest request) {
-        logger.info("Intento de login para el usuario: {}", email);
+        logger.info("[INFO]Intento de login para el usuario: {}", email);
         String ip = request.getRemoteAddr();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    logger.warn("Intento de login con usuario inexistente: {}", email);
+                    logger.warn("[WARN]Intento de login con usuario inexistente: {}", email);
                     return new InvalidCredentialsException("Credenciales inválidas");
                 });
 
         if (user.isAccountLocked()) {
-            logger.error("Cuenta bloqueada intentó iniciar sesión: {}", email);
+            logger.error("[CRITICAL]Cuenta bloqueada intentó iniciar sesión: {}", email);
             throw new AccountLockedException("La cuenta está bloqueada por múltiples intentos fallidos");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
 
             user.setFailedAttempts(user.getFailedAttempts() + 1);
-            logger.warn("Intento fallido #{} para el usuario {}",
+            logger.warn("[WARN]Intento fallido #{} para el usuario {}",
                     user.getFailedAttempts(), email);
 
 
             securityLogService.log(
                     email,
-                    "LOGIN_FAILED",
+                    "ERROR",
                     ip,
                     "Intento de login fallido"
             );
 
             if (user.getFailedAttempts() >= 5) {
                 user.setAccountLocked(true);
-                logger.error("Cuenta bloqueada por múltiples intentos fallidos: {}", email);
+                logger.error("[CRITICAL]Cuenta bloqueada por múltiples intentos fallidos: {}", email);
 
                 securityLogService.log(
                         email,
-                        "ACCOUNT_LOCKED",
+                        "CRITICAL",
                         ip,
                         "Cuenta bloqueada por múltiples intentos fallidos"
                 );
@@ -113,10 +113,10 @@ public class AuthService {
         user.setFailedAttempts(0);
         userRepository.save(user);
 
-        logger.info("Login exitoso del usuario: {}", email);
+        logger.info("[SUCCESS]Login exitoso del usuario: {}", email);
         securityLogService.log(
                 email,
-                "LOGIN_SUCCESS",
+                "SUCCESS",
                 ip,
                 "Inicio de sesión exitoso"
         );
