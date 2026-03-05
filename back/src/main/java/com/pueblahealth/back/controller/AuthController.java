@@ -1,6 +1,7 @@
 package com.pueblahealth.back.controller;
 
 import com.pueblahealth.back.dto.LoginRequest;
+import com.pueblahealth.back.dto.OtpRequest;
 import com.pueblahealth.back.dto.RegisterRequest;
 import com.pueblahealth.back.dto.UserResponse;
 import com.pueblahealth.back.model.User;
@@ -26,6 +27,15 @@ public class AuthController {
     @PostMapping("/login")
     public UserResponse login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         return authService.login(request.getEmail(), request.getPassword(), httpRequest);
+    }
+
+    @PostMapping("/verify-otp")
+    public String verifyOtp(@RequestBody OtpRequest request) {
+
+        return authService.verifyOtp(
+                request.getEmail(),
+                request.getOtp()
+        );
     }
 
 }
