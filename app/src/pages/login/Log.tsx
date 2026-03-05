@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [loadingOtp, setLoadingOtp] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -35,16 +38,51 @@ const Login = () => {
 
       const data = await response.json();
 
-      console.log("Login exitoso:", data);
+      console.log("OTP enviado:", data);
+
+      // Abrimos el modal para validar OTP
+      setShowOtpModal(true);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al iniciar sesión");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setLoadingOtp(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: form.email,
+          otp: otp,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Código incorrecto");
+      }
+
+      const data = await response.json();
+
+      console.log("OTP verificado:", data);
 
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
+      setShowOtpModal(false);
+
       alert("Bienvenido 🎉");
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error al iniciar sesión");
+      console.error(error);
+      alert("Código OTP incorrecto");
+    } finally {
+      setLoadingOtp(false);
     }
   };
 
@@ -93,6 +131,25 @@ const Login = () => {
           </div>
           <button type="submit">Ingresar</button>
         </form>
+        {showOtpModal && (
+          <div className="modalOverlay">
+            <div className="modal">
+              <h2>Verificación</h2>
+              <p>Ingresa el código enviado a tu correo</p>
+
+              <input
+                type="text"
+                placeholder="Código OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+
+              <button onClick={handleVerifyOtp} disabled={loadingOtp}>
+                {loadingOtp ? "Verificando..." : "Verificar"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -175,6 +232,40 @@ const Login = () => {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
+
+        .modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.modal button {
+  margin-top: 15px;
+  width: 100%;
+}
       `}</style>
     </div>
   );
