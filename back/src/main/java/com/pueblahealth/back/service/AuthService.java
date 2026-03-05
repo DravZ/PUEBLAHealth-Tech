@@ -5,14 +5,19 @@ import com.pueblahealth.back.dto.UserResponse;
 import com.pueblahealth.back.exception.AccountLockedException;
 import com.pueblahealth.back.exception.InvalidCredentialsException;
 import com.pueblahealth.back.exception.UserAlreadyExistsException;
+import com.pueblahealth.back.model.OtpCode;
 import com.pueblahealth.back.model.User;
+import com.pueblahealth.back.repository.OtpCodeRepository;
 import com.pueblahealth.back.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
@@ -20,15 +25,27 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityLogService securityLogService;
+    private final EmailService emailService;
+    private final OtpCodeRepository otpCodeRepository;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       SecurityLogService securityLogService) {
+                       SecurityLogService securityLogService, OtpCodeRepository otpCodeRepository,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.securityLogService = securityLogService;
+        this.otpCodeRepository = otpCodeRepository;
+        this.emailService = emailService;
     }
+
+    private String generateOtp() {
+        SecureRandom random = new SecureRandom();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
+    }
+
     public UserResponse register(String email, String password, HttpServletRequest request) {
 
         logger.info("[INFO]Intento de registro con email: {}", email);
@@ -64,6 +81,7 @@ public class AuthService {
         );
     }
 
+    @Transactional
     public UserResponse login(String email, String password, HttpServletRequest request) {
         logger.info("[INFO]Intento de login para el usuario: {}", email);
         String ip = request.getRemoteAddr();
@@ -121,11 +139,49 @@ public class AuthService {
                 "Inicio de sesión exitoso"
         );
 
+        String otp = generateOtp();
+
+        String hashedOtp = passwordEncoder.encode(otp);
+
+        OtpCode otpCode = new OtpCode(
+                email,
+                hashedOtp,
+                LocalDateTime.now().plusMinutes(2)
+        );
+
+        deleteOldOtp(email);
+
+        otpCodeRepository.save(otpCode);
+
+        emailService.sendOtp(email, otp);
+
+
 
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getRole()
         );
+    }
+
+    @Transactional
+    public void deleteOldOtp(String email){
+        otpCodeRepository.deleteByEmail(email);
+    }
+
+    public String verifyOtp(String email, String otp) {
+
+        OtpCode otpCode = otpCodeRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("OTP inválido"));
+
+        if (otpCode.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP expirado");
+        }
+
+        if(!passwordEncoder.matches(otp, otpCode.getCode())){
+            throw new RuntimeException("OTP incorrecto");
+        }
+
+        return "Autenticación exitosa";
     }
 }
