@@ -9,7 +9,9 @@ import com.pueblahealth.back.model.OtpCode;
 import com.pueblahealth.back.model.User;
 import com.pueblahealth.back.repository.OtpCodeRepository;
 import com.pueblahealth.back.repository.UserRepository;
+import com.pueblahealth.back.utils.AesUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,9 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class AuthService {
+
+    @Value("${AES_SECRET_KEY}")
+    private String secretKey;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -46,7 +52,8 @@ public class AuthService {
         return String.valueOf(otp);
     }
 
-    public UserResponse register(String email, String password, HttpServletRequest request) {
+    public UserResponse register(String email, String password, String nombre, String apellidoPaterno,
+                                 String apellidoMaterno, String curp,  HttpServletRequest request) {
 
         logger.info("[INFO]Intento de registro con email: {}", email);
 
@@ -57,10 +64,22 @@ public class AuthService {
 
         String hashedPassword = passwordEncoder.encode(password);
 
+        String encryptedCurp;
+
+        try {
+            encryptedCurp = AesUtil.encrypt(curp, secretKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Error cifrando CURP");
+        }
+
         User user = new User();
         user.setEmail(email);
         user.setPassword(hashedPassword);
         user.setRole("MEDICO");
+        user.setNombre(nombre);
+        user.setApellidoPaterno(apellidoPaterno);
+        user.setApellidoMaterno(apellidoMaterno);
+        user.setCurp(encryptedCurp);
         user.setFailedAttempts(0);
         user.setAccountLocked(false);
 
@@ -73,6 +92,14 @@ public class AuthService {
                 request.getRemoteAddr(),
                 "Cuenta bloqueada por múltiples intentos fallidos"
         );
+
+        String decryptedCurp;
+        try {
+            decryptedCurp = AesUtil.decrypt(user.getCurp(), secretKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Error descifrando CURP");
+        }
+        System.out.println(decryptedCurp);
 
         return new UserResponse(
                 savedUser.getId(),
@@ -169,7 +196,7 @@ public class AuthService {
         otpCodeRepository.deleteByEmail(email);
     }
 
-    public String verifyOtp(String email, String otp) {
+    public UserResponse verifyOtp(String email, String otp) {
 
         OtpCode otpCode = otpCodeRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("OTP inválido"));
@@ -182,6 +209,15 @@ public class AuthService {
             throw new RuntimeException("OTP incorrecto");
         }
 
-        return "Autenticación exitosa";
+        Optional<User> tempUser = userRepository.findByEmail(email);
+        if(tempUser.isPresent()){
+            return new UserResponse(
+                    tempUser.get().getId(),
+                    tempUser.get().getEmail(),
+                    tempUser.get().getRole()
+            );
+        }else{
+            throw new RuntimeException("Error al encontrar usuario");
+        }
     }
 }
