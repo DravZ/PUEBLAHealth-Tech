@@ -22,7 +22,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public UserResponse register(@RequestBody RegisterRequest request,HttpServletRequest httpRequest) {
-        return authService.register(request.getEmail(), request.getPassword(), httpRequest);
+        return authService.register(request.getEmail(), request.getPassword(), request.getNombre(),
+                request.getApellidoPaterno(), request.getApellidoMaterno(), request.getCurp(), httpRequest);
     }
     @PostMapping("/login")
     public UserResponse login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    public String verifyOtp(@RequestBody OtpRequest request) {
+    public UserResponse verifyOtp(@RequestBody OtpRequest request) {
 
         return authService.verifyOtp(
                 request.getEmail(),

@@ -19,6 +19,18 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column (nullable = false)
+    private String nombre;
+
+    @Column(name = "apellido_paterno")
+    private String apellidoPaterno;
+
+    @Column(name = "apellido_materno")
+    private String apellidoMaterno;
+
+    @Column(nullable = false)
+    private String curp;
+
     @Column(name = "failed_attempts")
     private int failedAttempts;
 
@@ -31,12 +43,17 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password, String role) {
+    public User(String email, String password, String role, String nombre, String apellidoPaterno,
+                String apellidoMaterno, String curp) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.failedAttempts = 0;
         this.accountLocked = false;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.nombre = nombre;
+        this.curp = curp;
     }
 
     // Getters y Setters
@@ -91,5 +108,41 @@ public class User {
 
     public void setLockTime(Long lockTime) {
         this.lockTime = lockTime;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
+
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
+
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
+    }
+
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 }
