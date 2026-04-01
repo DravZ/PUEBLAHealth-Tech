@@ -1,11 +1,9 @@
 package com.pueblahealth.back.controller;
 
-import com.pueblahealth.back.dto.*;
-import com.pueblahealth.back.model.User;
-import com.pueblahealth.back.service.AuthService;
+import com.pueblahealth.back.dto.CurpRequest;
+import com.pueblahealth.back.dto.ProfileResponse;
+import com.pueblahealth.back.dto.UserDetailsResponse;
 import com.pueblahealth.back.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,5 +21,9 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-
+    // 🔥 NUEVO ENDPOINT
+    @PostMapping("/profile")
+    public ProfileResponse getProfile(@RequestBody CurpRequest request) {
+        return userService.getProfile(request);
+    }
 }

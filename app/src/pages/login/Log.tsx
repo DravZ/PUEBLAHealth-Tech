@@ -1,7 +1,46 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+const SECRET_KEY = "12345678901234567890123456789012"; // 32 chars = AES-256
+
+const getKey = async () => {
+  const encoder = new TextEncoder();
+  return crypto.subtle.importKey(
+    "raw",
+    encoder.encode(SECRET_KEY),
+    { name: "AES-GCM" },
+    false,
+    ["encrypt", "decrypt"],
+  );
+};
+
+export const encrypt = async (text: string) => {
+  const key = await getKey();
+  const encoder = new TextEncoder();
+
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // IV seguro
+
+  const encrypted = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoder.encode(text),
+  );
+
+  // Convertir a base64 para enviar
+  const encryptedArray = new Uint8Array(encrypted);
+  const encryptedBase64 = btoa(String.fromCharCode(...encryptedArray));
+
+  const ivBase64 = btoa(String.fromCharCode(...iv));
+
+  return {
+    data: encryptedBase64,
+    iv: ivBase64,
+  };
+};
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState("");
   const [loadingOtp, setLoadingOtp] = useState(false);
@@ -20,6 +59,10 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 🔐 CIFRAR BIEN
+    const encryptedEmail = await encrypt(form.email);
+    const encryptedPassword = await encrypt(form.password);
+
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -27,8 +70,11 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: form.email,
-          password: form.password,
+          email: encryptedEmail.data,
+          emailIv: encryptedEmail.iv,
+
+          password: encryptedPassword.data,
+          passwordIv: encryptedPassword.iv,
         }),
       });
 
@@ -40,7 +86,6 @@ const Login = () => {
 
       console.log("OTP enviado:", data);
 
-      // Abrimos el modal para validar OTP
       setShowOtpModal(true);
     } catch (error) {
       console.error("Error:", error);
@@ -69,15 +114,23 @@ const Login = () => {
 
       const data = await response.json();
 
-      console.log("OTP verificado:", data);
+      console.log("DATA COMPLETA:", data);
 
+      // 🔥 GUARDAR DATOS (AQUÍ ES DONDE FALTABA TODO)
+
+      localStorage.setItem("userId", String(data.id));
+      localStorage.setItem("email", data.email);
+
+      // opcional si luego usas seguridad
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
+      console.log("GUARDADO userId:", localStorage.getItem("userId"));
+
       setShowOtpModal(false);
 
-      alert("Bienvenido 🎉");
+      navigate("/home");
     } catch (error) {
       console.error(error);
       alert("Código OTP incorrecto");

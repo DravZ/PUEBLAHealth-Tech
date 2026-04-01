@@ -1,11 +1,14 @@
 package com.pueblahealth.back.utils;
 
+import org.springframework.stereotype.Component;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+@Component
 public class AesUtil {
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";

@@ -9,6 +9,7 @@ import com.pueblahealth.back.model.OtpCode;
 import com.pueblahealth.back.model.User;
 import com.pueblahealth.back.repository.OtpCodeRepository;
 import com.pueblahealth.back.repository.UserRepository;
+import com.pueblahealth.back.utils.AES_GSMUtil;
 import com.pueblahealth.back.utils.AesUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,15 +36,18 @@ public class AuthService {
     private final OtpCodeRepository otpCodeRepository;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
+    private  final AES_GSMUtil aesGsmUtil;
+
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        SecurityLogService securityLogService, OtpCodeRepository otpCodeRepository,
-                       EmailService emailService) {
+                       EmailService emailService, AES_GSMUtil aes_gsmUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.securityLogService = securityLogService;
         this.otpCodeRepository = otpCodeRepository;
         this.emailService = emailService;
+        this.aesGsmUtil = aes_gsmUtil;
     }
 
     private String generateOtp() {
@@ -109,7 +113,25 @@ public class AuthService {
     }
 
     @Transactional
-    public UserResponse login(String email, String password, HttpServletRequest request) {
+    public UserResponse login(String mail, String pass, String emailIv,
+                              String passwordIv, HttpServletRequest request) {
+
+        System.out.println(mail + "   " + pass + "   " + emailIv + "   " + passwordIv);
+
+        String email;
+        String password;
+        try {
+            email = AES_GSMUtil.decrypt(mail, emailIv);
+        } catch (Exception e) {
+            logger.error("[CRITICAL] Error al descifrar email", e);
+            throw new RuntimeException("Error de seguridad en la solicitud");
+        }
+        try {
+            password = AES_GSMUtil.decrypt(pass, passwordIv);
+        } catch (Exception e) {
+            logger.error("[CRITICAL] Error al descifrar contraseña", e);
+            throw new RuntimeException("Error de seguridad en la solicitud");
+        }
         logger.info("[INFO]Intento de login para el usuario: {}", email);
         String ip = request.getRemoteAddr();
 

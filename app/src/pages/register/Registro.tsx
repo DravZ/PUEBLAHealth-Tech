@@ -4,6 +4,10 @@ const Registro = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    curp: "",
     role: "MEDICO",
   });
 
@@ -28,6 +32,10 @@ const Registro = () => {
         body: JSON.stringify({
           email: form.email,
           password: form.password,
+          nombre: form.nombre,
+          apellidoPaterno: form.apellidoPaterno,
+          apellidoMaterno: form.apellidoMaterno,
+          curp: form.curp,
         }),
       });
 
@@ -53,11 +61,54 @@ const Registro = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="inputGroup">
+            <label>Nombre</label>
+            <input
+              type="text"
+              name="nombre"
+              value={form.nombre}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="inputGroup">
+            <label>Apellido Paterno</label>
+            <input
+              type="text"
+              name="apellidoPaterno"
+              value={form.apellidoPaterno}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="inputGroup">
+            <label>Apellido Materno</label>
+            <input
+              type="text"
+              name="apellidoMaterno"
+              value={form.apellidoMaterno}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="inputGroup">
+            <label>CURP</label>
+            <input
+              type="text"
+              name="curp"
+              value={form.curp}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="inputGroup">
             <label>Correo electrónico</label>
             <input
               type="email"
               name="email"
-              placeholder="ejemplo@hospital.com"
               value={form.email}
               onChange={handleChange}
               required
@@ -69,7 +120,6 @@ const Registro = () => {
             <input
               type="password"
               name="password"
-              placeholder="••••••••"
               value={form.password}
               onChange={handleChange}
               required

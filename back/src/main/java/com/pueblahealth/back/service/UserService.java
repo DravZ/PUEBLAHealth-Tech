@@ -7,15 +7,42 @@ import com.pueblahealth.back.repository.UserRepository;
 import com.pueblahealth.back.utils.AesUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.pueblahealth.back.dto.CurpRequest;
+import com.pueblahealth.back.dto.ProfileResponse;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository;
+
     @Value("${AES_SECRET_KEY}")
     private String secretKey;
-    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public ProfileResponse getProfile(CurpRequest request) {
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        try {
+            String decryptedCurp = AesUtil.decrypt(user.getCurp(), secretKey);
+
+            if (!decryptedCurp.equals(request.getCurp())) {
+                throw new RuntimeException("CURP incorrecta");
+            }
+
+            return new ProfileResponse(
+                    user.getNombre(),
+                    user.getEmail(),
+                    decryptedCurp
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 🔥 CLAVE
+            throw new RuntimeException("Error real: " + e.getMessage());
+        }
     }
 
     public UserDetailsResponse getUserById(Long id){

@@ -27,7 +27,8 @@ public class AuthController {
     }
     @PostMapping("/login")
     public UserResponse login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
-        return authService.login(request.getEmail(), request.getPassword(), httpRequest);
+        return authService.login(request.getEmail(), request.getPassword(), request.getEmailIv(),
+                request.getPasswordIv(), httpRequest);
     }
 
     @PostMapping("/verify-otp")
